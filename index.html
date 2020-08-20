@@ -5,13 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carousel Component</title>
-    <link href="./index.css" rel="stylesheet">
+    <link href="./index-frank.css" rel="stylesheet">
 </head>
 
 <body>
     <div id="container"></div>
     <script type='module'>
-        import Carousel from './index.js'
+        import Carousel from './index-frank.js'
+
 
         // create
         let carousel = new Carousel();
@@ -26,7 +27,7 @@
         carousel.render();
 
         // mount
-        document.getElementById("container").appendChild(carousel.root);
+        document.getElementById("container").appendChild(carousel.rootDom);
     </script>
 </body>
 
