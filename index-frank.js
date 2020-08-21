@@ -11,6 +11,7 @@ export default class Carousel {
     for (let d of this.data) {
       const catImg = document.createElement("img");
       catImg.src = d;
+      catImg.setAttribute("draggable", "false");
 
       this.rootDom.appendChild(catImg);
     }
@@ -43,6 +44,40 @@ export default class Carousel {
 
       setTimeout(slides, 3000);
     };
-    setTimeout(slides, 3000);
+    // setTimeout(slides, 3000);
+
+    this.rootDom.addEventListener("mousedown", () => {
+      console.log("mousedown");
+
+      let prevPosition =
+        (currentPosition + this.data.length - 1) % this.data.length;
+      let nextPosition = (currentPosition + 1) % this.data.length;
+
+      let prevImg = this.rootDom.childNodes[prevPosition];
+      let currentImg = this.rootDom.childNodes[currentPosition];
+      let nextImg = this.rootDom.childNodes[nextPosition];
+
+      prevImg.style.transition = `ease 0s`;
+      currentImg.style.transition = `ease 0s`;
+      nextImg.style.transition = `ease 0s`;
+
+      prevImg.style.transform = `translateX(${-100 * (prevPosition + 1)}%)`;
+      currentImg.style.transform = `translateX(${-100 * currentPosition}%)`;
+      nextImg.style.transform = `translateX(${-100 * (nextPosition - 1)}%)`;
+
+      const move = () => {
+        console.log("mousemove");
+      };
+
+      const up = () => {
+        console.log("mouseup");
+        currentPosition = nextPosition;
+        this.rootDom.removeEventListener("mousemove", move);
+        this.rootDom.removeEventListener("mouseup", up);
+      };
+
+      this.rootDom.addEventListener("mousemove", move);
+      this.rootDom.addEventListener("mouseup", up);
+    });
   }
 }
