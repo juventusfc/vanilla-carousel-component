@@ -108,12 +108,12 @@ export default class Carousel {
         currentPosition =
           (currentPosition - offset + this.data.length) % this.data.length;
 
-        this.rootDom.removeEventListener("mousemove", move);
-        this.rootDom.removeEventListener("mouseup", up);
+        document.removeEventListener("mousemove", move);
+        document.removeEventListener("mouseup", up);
       };
 
-      this.rootDom.addEventListener("mousemove", move);
-      this.rootDom.addEventListener("mouseup", up);
+      document.addEventListener("mousemove", move);
+      document.addEventListener("mouseup", up);
     });
   }
 }
