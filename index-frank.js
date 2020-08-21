@@ -46,8 +46,8 @@ export default class Carousel {
     };
     // setTimeout(slides, 3000);
 
-    this.rootDom.addEventListener("mousedown", () => {
-      console.log("mousedown");
+    this.rootDom.addEventListener("mousedown", (e) => {
+      let startX = e.clientX;
 
       let prevPosition =
         (currentPosition + this.data.length - 1) % this.data.length;
@@ -61,17 +61,53 @@ export default class Carousel {
       currentImg.style.transition = `ease 0s`;
       nextImg.style.transition = `ease 0s`;
 
-      prevImg.style.transform = `translateX(${-100 * (prevPosition + 1)}%)`;
-      currentImg.style.transform = `translateX(${-100 * currentPosition}%)`;
-      nextImg.style.transform = `translateX(${-100 * (nextPosition - 1)}%)`;
+      prevImg.style.transform = `translateX(${
+        5 * (-100 * (prevPosition + 1))
+      }px)`;
+      currentImg.style.transform = `translateX(${
+        5 * (-100 * currentPosition)
+      }px)`;
+      nextImg.style.transform = `translateX(${
+        5 * (-100 * (nextPosition - 1))
+      }px)`;
 
-      const move = () => {
-        console.log("mousemove");
+      const move = (e) => {
+        prevImg.style.transform = `translateX(${
+          5 * (-100 * (prevPosition + 1)) + e.clientX - startX
+        }px)`;
+        currentImg.style.transform = `translateX(${
+          5 * (-100 * currentPosition) + e.clientX - startX
+        }px)`;
+        nextImg.style.transform = `translateX(${
+          5 * (-100 * (nextPosition - 1)) + e.clientX - startX
+        }px)`;
       };
 
-      const up = () => {
-        console.log("mouseup");
-        currentPosition = nextPosition;
+      const up = (e) => {
+        let offset = 0;
+        if (e.clientX - startX > 250) {
+          offset = 1; // 向左移
+        } else if (e.clientX - startX < -250) {
+          offset = -1; // 向右移
+        }
+
+        prevImg.style.transition = `transform ease 0.5s`;
+        currentImg.style.transition = `transform ease 0.5s`;
+        nextImg.style.transition = `transform ease 0.5s`;
+
+        prevImg.style.transform = `translateX(${
+          5 * (-100 * (prevPosition + 1)) + offset * 500
+        }px)`;
+        currentImg.style.transform = `translateX(${
+          5 * (-100 * currentPosition) + offset * 500
+        }px)`;
+        nextImg.style.transform = `translateX(${
+          5 * (-100 * (nextPosition - 1)) + offset * 500
+        }px)`;
+
+        currentPosition =
+          (currentPosition - offset + this.data.length) % this.data.length;
+
         this.rootDom.removeEventListener("mousemove", move);
         this.rootDom.removeEventListener("mouseup", up);
       };
