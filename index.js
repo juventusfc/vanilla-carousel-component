@@ -1,102 +1,117 @@
 export default class Carousel {
   constructor() {
-    this.root = null;
+    this.rootDom = null;
     this.data = [];
   }
 
   render() {
-    this.root = document.createElement("div");
-    this.root.classList.add("carousel");
+    this.rootDom = document.createElement("div");
+    this.rootDom.classList.add("carousel");
 
     for (let d of this.data) {
-      let element = document.createElement("img");
-      element.src = d;
-      element.addEventListener("dragstart", (event) => event.preventDefault());
+      const catImg = document.createElement("img");
+      catImg.src = d;
+      catImg.setAttribute("draggable", "false");
 
-      this.root.appendChild(element);
+      this.rootDom.appendChild(catImg);
     }
 
-    let position = 0;
-    let nextPic = () => {
-      let nextPosition = (position + 1) % this.data.length;
+    // add slide
+    let currentPosition = 0;
+    const slides = () => {
+      let nextPosition = (currentPosition + 1) % this.data.length;
 
-      let current = this.root.childNodes[position];
-      let next = this.root.childNodes[nextPosition];
+      let currentImg = this.rootDom.childNodes[currentPosition];
+      let nextImg = this.rootDom.childNodes[nextPosition];
 
-      current.style.transition = "ease 0s";
-      next.style.transition = "ease 0s";
-      current.style.transform = `translateX(${-100 * position}%)`;
-      next.style.transform = `translateX(${100 - 100 * nextPosition}%)`;
+      currentImg.style.transition = `ease 0s`;
+      nextImg.style.transition = `ease 0s`;
+      currentImg.style.transform = `translateX(${-100 * currentPosition}%)`;
+      nextImg.style.transform = `translateX(${100 - 100 * nextPosition}%)`;
 
       setTimeout(() => {
-        current.style.transition = ""; // use css rule
-        next.style.transition = "";
-        current.style.transform = `translateX(${-100 - 100 * position}%)`;
-        next.style.transform = `translateX(${-100 * nextPosition}%)`;
-        position = nextPosition;
+        currentImg.style.transition = `transform ease 0.5s`;
+        nextImg.style.transition = `transform ease 0.5s`;
+        currentImg.style.transform = `translateX(${
+          -100 * (currentPosition + 1)
+        }%)`;
+        nextImg.style.transform = `translateX(${
+          100 - 100 * (nextPosition + 1)
+        }%)`;
+
+        currentPosition = nextPosition;
       }, 16);
 
-      setTimeout(nextPic, 3000);
+      setTimeout(slides, 3000);
     };
-    setTimeout(nextPic, 3000);
+    // setTimeout(slides, 3000);
 
-    this.root.addEventListener("mousedown", (event) => {
-      let startX = event.clientX,
-        startY = event.clientY;
+    this.rootDom.addEventListener("mousedown", (e) => {
+      let startX = e.clientX;
 
-      let prevPosition = (position - 1 + this.data.length) % this.data.length;
-      let nextPosition = (position + 1) % this.data.length;
+      let prevPosition =
+        (currentPosition + this.data.length - 1) % this.data.length;
+      let nextPosition = (currentPosition + 1) % this.data.length;
 
-      let current = this.root.childNodes[position];
-      let prev = this.root.childNodes[prevPosition];
-      let next = this.root.childNodes[nextPosition];
+      let prevImg = this.rootDom.childNodes[prevPosition];
+      let currentImg = this.rootDom.childNodes[currentPosition];
+      let nextImg = this.rootDom.childNodes[nextPosition];
 
-      prev.style.transition = "ease 0s";
-      current.style.transition = "ease 0s";
-      next.style.transition = "ease 0s";
+      prevImg.style.transition = `ease 0s`;
+      currentImg.style.transition = `ease 0s`;
+      nextImg.style.transition = `ease 0s`;
 
-      prev.style.transform = `translateX(${-500 - 500 * prevPosition}px)`;
-      current.style.transform = `translateX(${-500 * position}px)`;
-      next.style.transform = `translateX(${500 - 500 * nextPosition}px)`;
+      prevImg.style.transform = `translateX(${
+        5 * (-100 * (prevPosition + 1))
+      }px)`;
+      currentImg.style.transform = `translateX(${
+        5 * (-100 * currentPosition)
+      }px)`;
+      nextImg.style.transform = `translateX(${
+        5 * (-100 * (nextPosition - 1))
+      }px)`;
 
-      let move = (event) => {
-        prev.style.transform = `translateX(${
-          event.clientX - startX - 500 - 500 * prevPosition
+      const move = (e) => {
+        prevImg.style.transform = `translateX(${
+          5 * (-100 * (prevPosition + 1)) + e.clientX - startX
         }px)`;
-        current.style.transform = `translateX(${
-          event.clientX - startX - 500 * position
+        currentImg.style.transform = `translateX(${
+          5 * (-100 * currentPosition) + e.clientX - startX
         }px)`;
-        next.style.transform = `translateX(${
-          event.clientX - startX + 500 - 500 * nextPosition
+        nextImg.style.transform = `translateX(${
+          5 * (-100 * (nextPosition - 1)) + e.clientX - startX
         }px)`;
       };
 
-      let up = (event) => {
+      const up = (e) => {
         let offset = 0;
-        if (event.clientX - startX > 250) {
-          offset = 1;
-        } else if (event.clientX - startX < -250) {
-          offset = -1;
+        if (e.clientX - startX > 250) {
+          offset = 1; // 向左移
+        } else if (e.clientX - startX < -250) {
+          offset = -1; // 向右移
         }
 
-        prev.style.transition = "";
-        current.style.transition = "";
-        next.style.transition = "";
-        prev.style.transform = `translateX(${
-          offset * 500 - 500 - 500 * prevPosition
+        prevImg.style.transition = `transform ease 0.5s`;
+        currentImg.style.transition = `transform ease 0.5s`;
+        nextImg.style.transition = `transform ease 0.5s`;
+
+        prevImg.style.transform = `translateX(${
+          5 * (-100 * (prevPosition + 1)) + offset * 500
         }px)`;
-        current.style.transform = `translateX(${
-          offset * 500 - 500 * position
+        currentImg.style.transform = `translateX(${
+          5 * (-100 * currentPosition) + offset * 500
         }px)`;
-        next.style.transform = `translateX(${
-          offset * 500 + 500 - 500 * nextPosition
+        nextImg.style.transform = `translateX(${
+          5 * (-100 * (nextPosition - 1)) + offset * 500
         }px)`;
 
-        position = (position - offset + this.data.length) % this.data.length;
+        currentPosition =
+          (currentPosition - offset + this.data.length) % this.data.length;
 
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", up);
       };
+
       document.addEventListener("mousemove", move);
       document.addEventListener("mouseup", up);
     });
